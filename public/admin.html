@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>BTX.ONE – Admin Panel (Demo)</title>
+  <title>BTX.ONE – Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -229,7 +229,7 @@
         <img src="images/logo.png" alt="BTX Logo">
         <div class="brand-title">
           <h1>BTX.ONE</h1>
-          <p>USDT MLM • Admin Panel (Demo)</p>
+          <p>USDT MLM • Admin Panel (LIVE)</p>
         </div>
       </div>
       <div class="header-actions">
@@ -254,7 +254,7 @@
         <!-- USERS TAB -->
         <section id="tab-users" class="tab-section active">
           <div class="table-wrap">
-            <strong>All Members (demo)</strong>
+            <strong>All Members (LIVE)</strong>
             <table>
               <thead>
                 <tr>
@@ -278,7 +278,7 @@
 
           <!-- EDIT FORM -->
           <div class="edit-wrap">
-            <strong>Edit Member (demo)</strong>
+            <strong>Edit Member (LIVE)</strong>
             <form id="editUserForm">
               <input type="hidden" id="editUserId" />
 
@@ -374,9 +374,9 @@
                   </div>
                 </div>
                 <div>
-                  <label>Password (plain – demo)</label>
+                  <label>Password (display only)</label>
                   <div class="field">
-                    <input id="editPassword" type="text" />
+                    <input id="editPassword" type="text" disabled />
                   </div>
                 </div>
               </div>
@@ -384,16 +384,15 @@
               <button type="submit" class="btn-save">SAVE CHANGES</button>
             </form>
             <p class="note">
-              ⚠ শুধু demo এর জন্য admin এখানে সব দেখছে (password সহ)। Real প্রোজেক্টে অবশ্যই password hash করতে হবে
-              আর admin panel থেকে password দেখা যাবে না, শুধু reset করা যাবে।
+              ⚠ এখানে password শুধু দেখানোর জন্য। Firebase Auth password change করতে reset mail ব্যবহার করতে হবে।
             </p>
           </div>
         </section>
 
-        <!-- DEPOSITS TAB -->
+        <!-- DEPOSITS TAB (later Firestore connect করবো) -->
         <section id="tab-deposits" class="tab-section">
           <div class="table-wrap">
-            <strong>All Deposit Requests (demo)</strong>
+            <strong>All Deposit Requests (coming soon)</strong>
             <table>
               <thead>
                 <tr>
@@ -409,15 +408,12 @@
               <tbody id="depAdminBody"></tbody>
             </table>
           </div>
-          <p class="note">
-            ✅ Deposit APPROVE করলে member.balance ও member.depositTotal দুটোই বাড়বে। REJECT করলে শুধু স্ট্যাটাস চেঞ্জ হবে।
-          </p>
         </section>
 
-        <!-- WITHDRAWS TAB -->
+        <!-- WITHDRAWS TAB (later Firestore connect করবো) -->
         <section id="tab-withdraws" class="tab-section">
           <div class="table-wrap">
-            <strong>All Withdraw Requests (demo)</strong>
+            <strong>All Withdraw Requests (coming soon)</strong>
             <table>
               <thead>
                 <tr>
@@ -433,395 +429,13 @@
               <tbody id="wdAdminBody"></tbody>
             </table>
           </div>
-          <p class="note">
-            ✅ Withdraw APPROVE করলে member.balance থেকে amount কাটা হবে (যদি sufficient balance থাকে),
-            নাহলে auto REJECT করবে (demo).
-          </p>
         </section>
 
       </div>
     </section>
   </div>
 
-  <script>
-    const STORAGE_USERS      = "btx_users_v1";
-    const STORAGE_CURRENT    = "btx_current_user_v1";
-    const STORAGE_DEPOSITS   = "btx_deposits_v1";
-    const STORAGE_WITHDRAWS  = "btx_withdraws_v1";
-
-    function loadUsers(){
-      const raw = localStorage.getItem(STORAGE_USERS);
-      if(!raw) return [];
-      try{return JSON.parse(raw);}catch(e){return [];}
-    }
-    function saveUsers(list){
-      localStorage.setItem(STORAGE_USERS, JSON.stringify(list));
-    }
-    function getCurrentUser(){
-      const raw = localStorage.getItem(STORAGE_CURRENT);
-      if(!raw) return null;
-      try{return JSON.parse(raw);}catch(e){return null;}
-    }
-    function loadDeposits(){
-      const raw = localStorage.getItem(STORAGE_DEPOSITS);
-      if(!raw) return [];
-      try{return JSON.parse(raw);}catch(e){return [];}
-    }
-    function saveDeposits(list){
-      localStorage.setItem(STORAGE_DEPOSITS, JSON.stringify(list));
-    }
-    function loadWithdraws(){
-      const raw = localStorage.getItem(STORAGE_WITHDRAWS);
-      if(!raw) return [];
-      try{return JSON.parse(raw);}catch(e){return [];}
-    }
-    function saveWithdraws(list){
-      localStorage.setItem(STORAGE_WITHDRAWS, JSON.stringify(list));
-    }
-
-    function goDashboard(){
-      window.location.href = "dashboard.html";
-    }
-    function adminLogout(){
-      localStorage.removeItem(STORAGE_CURRENT);
-      alert("Admin logged out (demo).");
-      window.location.href = "login.html";
-    }
-
-    // 🔥 CLEAR DATA – only from Admin
-    function resetDemo(){
-      if(!confirm("সব demo data (users, deposits, withdraws) clear হবে। শুধু current admin থাকবেন। Proceed?")) return;
-
-      const me = getCurrentUser();
-      let users = loadUsers();
-
-      if(me){
-        // শুধু current admin রেখে বাকিদের বাদ
-        users = users.filter(u => u.id === me.id);
-        if(users.length === 1){
-          const a = users[0];
-          a.balance      = 0;
-          a.depositTotal = 0;
-          a.directIncome = 0;
-          a.teamIncome   = 0;
-          a.teamCount    = 0;
-        }
-      }else{
-        users = [];
-      }
-
-      saveUsers(users);
-      saveDeposits([]);
-      saveWithdraws([]);
-
-      // login count গুলো ক্লিন
-      for(let i=localStorage.length-1;i>=0;i--){
-        const key = localStorage.key(i);
-        if(key && key.startsWith("btx_login_count_")){
-          localStorage.removeItem(key);
-        }
-      }
-
-      alert("Demo data cleared. শুধু current admin রাখা হয়েছে (যদি logged-in থাকে)।");
-      renderUsers();
-      renderDeposits();
-      renderWithdraws();
-    }
-
-    // TAB SWITCH
-    function switchTab(name,btn){
-      document.querySelectorAll(".tab-section").forEach(s=>{
-        s.classList.remove("active");
-      });
-      document.getElementById("tab-" + name).classList.add("active");
-
-      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-      if(btn) btn.classList.add("active");
-    }
-
-    // Admin check
-    const me = getCurrentUser();
-    if(!me || me.role !== "admin"){
-      alert("Admin panel এ ঢুকতে admin হিসেবে login থাকতে হবে (demo).");
-      window.location.href = "login.html";
-    }
-
-    // ====== USERS TAB ======
-    let users = loadUsers();
-
-    const userTbody = document.getElementById("userTableBody");
-
-    function renderUsers(){
-      users = loadUsers();
-      users.sort((a,b)=> (a.createdAt || "").localeCompare(b.createdAt || ""));
-      userTbody.innerHTML = "";
-
-      users.forEach(u=>{
-        const tr = document.createElement("tr");
-        const dt = u.createdAt ? new Date(u.createdAt).toLocaleString() : "-";
-        tr.innerHTML = `
-          <td>${u.username || ""}</td>
-          <td>${u.fullName || ""}</td>
-          <td>${u.email || ""}</td>
-          <td>${u.mobile || ""}</td>
-          <td>${u.country || ""}</td>
-          <td>${u.role || "member"}</td>
-          <td>${u.membershipType || "free"}</td>
-          <td>$${(u.balance || 0).toFixed(2)}</td>
-          <td>${u.teamCount || 0}</td>
-          <td>${u.refCode || ""}</td>
-          <td>${dt}</td>
-          <td>
-            <button class="btn-table btn-edit" onclick="editUser(${u.id})">Edit</button>
-          </td>
-        `;
-        userTbody.appendChild(tr);
-      });
-    }
-
-    function editUser(id){
-      const u = users.find(x=> x.id === id);
-      if(!u){
-        alert("User পাওয়া যায়নি.");
-        return;
-      }
-      document.getElementById("editUserId").value       = u.id;
-      document.getElementById("editUsername").value     = u.username || "";
-      document.getElementById("editFullName").value     = u.fullName || "";
-      document.getElementById("editEmail").value        = u.email || "";
-      document.getElementById("editMobile").value       = u.mobile || "";
-      document.getElementById("editCountry").value      = u.country || "";
-      document.getElementById("editRole").value         = u.role || "member";
-      document.getElementById("editMembership").value   = u.membershipType || "free";
-      document.getElementById("editBalance").value      = (u.balance || 0);
-      document.getElementById("editDepositTotal").value = (u.depositTotal || 0);
-      document.getElementById("editDirectIncome").value = (u.directIncome || 0);
-      document.getElementById("editTeamIncome").value   = (u.teamIncome || 0);
-      document.getElementById("editTeamCount").value    = (u.teamCount || 0);
-      document.getElementById("editRefCode").value      = u.refCode || "";
-      document.getElementById("editSponsor").value      = u.sponsor_username || "";
-      document.getElementById("editPassword").value     = u.password || "";
-    }
-
-    document.getElementById("editUserForm").addEventListener("submit",(e)=>{
-      e.preventDefault();
-      const id = parseInt(document.getElementById("editUserId").value,10);
-      if(!id){alert("Select someone first.");return;}
-
-      let list = loadUsers();
-      const idx = list.findIndex(u=>u.id === id);
-      if(idx < 0){alert("User পাওয়া যায়নি.");return;}
-
-      const u = list[idx];
-
-      u.fullName         = document.getElementById("editFullName").value.trim();
-      u.email            = document.getElementById("editEmail").value.trim().toLowerCase();
-      u.mobile           = document.getElementById("editMobile").value.trim();
-      u.country          = document.getElementById("editCountry").value.trim();
-      u.role             = document.getElementById("editRole").value;
-      u.membershipType   = document.getElementById("editMembership").value;
-      u.balance          = parseFloat(document.getElementById("editBalance").value || "0");
-      u.depositTotal     = parseFloat(document.getElementById("editDepositTotal").value || "0");
-      u.directIncome     = parseFloat(document.getElementById("editDirectIncome").value || "0");
-      u.teamIncome       = parseFloat(document.getElementById("editTeamIncome").value || "0");
-      u.teamCount        = parseInt(document.getElementById("editTeamCount").value || "0",10);
-      u.refCode          = document.getElementById("editRefCode").value.trim();
-      u.sponsor_username = document.getElementById("editSponsor").value.trim();
-      u.password         = document.getElementById("editPassword").value;
-
-      list[idx] = u;
-      saveUsers(list);
-
-      if(me.id === u.id){
-        localStorage.setItem(STORAGE_CURRENT, JSON.stringify(u));
-      }
-
-      alert("Member updated (demo).");
-      users = list;
-      renderUsers();
-    });
-
-    // ====== DEPOSITS TAB ======
-    const depTbody = document.getElementById("depAdminBody");
-
-    function renderDeposits(){
-      let deps = loadDeposits();
-      deps.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
-      depTbody.innerHTML = "";
-
-      deps.forEach(d=>{
-        const tr = document.createElement("tr");
-        const dt = new Date(d.createdAt);
-        const stClass =
-          d.status === "approved" ? "status-approved":
-          d.status === "rejected" ? "status-rejected":"status-pending";
-
-        let actionHtml = "";
-        if(d.status === "pending"){
-          actionHtml = `
-            <button class="btn-table btn-approve" onclick="approveDeposit(${d.id})">Approve</button>
-            <button class="btn-table btn-reject" onclick="rejectDeposit(${d.id})">Reject</button>
-          `;
-        }
-
-        tr.innerHTML = `
-          <td>${dt.toLocaleString()}</td>
-          <td>${d.username || d.userId}</td>
-          <td>$${d.amount.toFixed(2)}</td>
-          <td>${d.method}</td>
-          <td>${d.txn}</td>
-          <td class="${stClass}">${d.status}</td>
-          <td>${actionHtml}</td>
-        `;
-        depTbody.appendChild(tr);
-      });
-    }
-
-    window.approveDeposit = function(id){
-      let deps = loadDeposits();
-      const idx = deps.findIndex(x=>x.id === id);
-      if(idx < 0){alert("Deposit not found.");return;}
-      let d = deps[idx];
-      if(d.status !== "pending"){
-        alert("Already processed.");
-        return;
-      }
-
-      let us = loadUsers();
-      const uIdx = us.findIndex(u=>u.id === d.userId);
-      if(uIdx < 0){
-        alert("User পাওয়া যায়নি, শুধু status আপডেট হবে।");
-      }else{
-        us[uIdx].balance      = (us[uIdx].balance || 0) + d.amount;
-        us[uIdx].depositTotal = (us[uIdx].depositTotal || 0) + d.amount;
-        saveUsers(us);
-      }
-
-      d.status = "approved";
-      d.approvedAt = new Date().toISOString();
-      deps[idx] = d;
-      saveDeposits(deps);
-
-      alert("Deposit approved (demo).");
-      renderDeposits();
-      renderUsers();
-    };
-
-    window.rejectDeposit = function(id){
-      let deps = loadDeposits();
-      const idx = deps.findIndex(x=>x.id === id);
-      if(idx < 0){alert("Deposit not found.");return;}
-      let d = deps[idx];
-      if(d.status !== "pending"){
-        alert("Already processed.");
-        return;
-      }
-      d.status = "rejected";
-      d.approvedAt = new Date().toISOString();
-      deps[idx] = d;
-      saveDeposits(deps);
-      alert("Deposit rejected (demo).");
-      renderDeposits();
-    };
-
-    // ====== WITHDRAWS TAB ======
-    const wdTbody = document.getElementById("wdAdminBody");
-
-    function renderWithdraws(){
-      let list = loadWithdraws();
-      list.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
-      wdTbody.innerHTML = "";
-
-      list.forEach(w=>{
-        const tr = document.createElement("tr");
-        const dt = new Date(w.createdAt);
-        const stClass =
-          w.status === "approved" ? "status-approved":
-          w.status === "rejected" ? "status-rejected":"status-pending";
-
-        let actionHtml = "";
-        if(w.status === "pending"){
-          actionHtml = `
-            <button class="btn-table btn-approve" onclick="approveWithdraw(${w.id})">Approve</button>
-            <button class="btn-table btn-reject" onclick="rejectWithdraw(${w.id})">Reject</button>
-          `;
-        }
-
-        tr.innerHTML = `
-          <td>${dt.toLocaleString()}</td>
-          <td>${w.username || w.userId}</td>
-          <td>$${w.amount.toFixed(2)}</td>
-          <td>${w.method}</td>
-          <td>${w.wallet}</td>
-          <td class="${stClass}">${w.status}</td>
-          <td>${actionHtml}</td>
-        `;
-        wdTbody.appendChild(tr);
-      });
-    }
-
-    window.approveWithdraw = function(id){
-      let list = loadWithdraws();
-      const idx = list.findIndex(x=>x.id === id);
-      if(idx < 0){alert("Withdraw not found.");return;}
-      let w = list[idx];
-      if(w.status !== "pending"){
-        alert("Already processed.");
-        return;
-      }
-
-      let us = loadUsers();
-      const uIdx = us.findIndex(u=>u.id === w.userId);
-      if(uIdx < 0){
-        alert("User পাওয়া যায়নি, withdraw APPROVE করা যাবে না (demo).");
-        return;
-      }
-
-      const bal = us[uIdx].balance || 0;
-      if(bal < w.amount){
-        alert("User balance কম আছে – auto reject করা হলো (demo).");
-        w.status = "rejected";
-        w.approvedAt = new Date().toISOString();
-        list[idx] = w;
-        saveWithdraws(list);
-        renderWithdraws();
-        return;
-      }
-
-      us[uIdx].balance = bal - w.amount;
-      saveUsers(us);
-
-      w.status = "approved";
-      w.approvedAt = new Date().toISOString();
-      list[idx] = w;
-      saveWithdraws(list);
-
-      alert("Withdraw approved (demo).");
-      renderWithdraws();
-      renderUsers();
-    };
-
-    window.rejectWithdraw = function(id){
-      let list = loadWithdraws();
-      const idx = list.findIndex(x=>x.id === id);
-      if(idx < 0){alert("Withdraw not found.");return;}
-      let w = list[idx];
-      if(w.status !== "pending"){
-        alert("Already processed.");
-        return;
-      }
-      w.status = "rejected";
-      w.approvedAt = new Date().toISOString();
-      list[idx] = w;
-      saveWithdraws(list);
-      alert("Withdraw rejected (demo).");
-      renderWithdraws();
-    };
-
-    // INIT RENDER
-    renderUsers();
-    renderDeposits();
-    renderWithdraws();
-  </script>
+  <!-- এখন আর inline script নেই, সব logic admin.js এ -->
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
