@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>BTX.ONE – Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+    body{
+      min-height:100vh;
+      background:radial-gradient(circle at top,#020617,#020617 60%);
+      color:#e5f0ff;
+    }
+    a{text-decoration:none;color:inherit}
+
+    .shell{
+      max-width:1100px;
+      margin:0 auto;
+      padding:16px;
+    }
+
+    /* HEADER / NAV */
+    .top-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .brand-logo{
+      width:52px;height:52px;border-radius:999px;
+      object-fit:cover;
+      box-shadow:0 0 24px rgba(59,130,246,.95);
+    }
+    .brand-title h1{
+      font-size:20px;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+    .brand-title p{
+      font-size:11px;
+      color:#9ca3af;
+      margin-top:2px;
+    }
+    .nav-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .btn,
+    .btn-outline{
+      border-radius:999px;
+      padding:7px 16px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      cursor:pointer;
+      border:none;
+    }
+    .btn{
+      background:linear-gradient(135deg,#38bdf8,#22c55e);
+      color:#020617;
+      box-shadow:0 14px 32px rgba(56,189,248,.85);
+    }
+    .btn-outline{
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      color:#e5e7eb;
+    }
+
+    /* MAIN CARD */
+    .hero-card{
+      position:relative;
+      border-radius:26px;
+      padding:24px 22px 22px;
+      background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(30,64,175,.96));
+      box-shadow:
+        0 0 0 2px rgba(56,189,248,.7),
+        0 26px 70px rgba(0,0,0,.9);
+      overflow:hidden;
+      margin-bottom:18px;
+    }
+    .hero-glow{
+      position:absolute;inset:-90px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,.25),transparent 60%),
+        radial-gradient(circle at 100% 100%,rgba(74,222,128,.25),transparent 60%);
+      opacity:.9;pointer-events:none;
+    }
+    .hero-inner{position:relative;z-index:1;}
+
+    .hero-title{
+      font-size:24px;
+      margin-bottom:6px;
+    }
+    .hero-sub{
+      font-size:13px;
+      color:#cbd5f5;
+      margin-bottom:10px;
+    }
+    .hero-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(15,23,42,.9);
+      border:1px solid rgba(250,204,21,.8);
+      color:#facc15;
+      margin-bottom:10px;
+    }
+    .hero-cta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+      margin-bottom:10px;
+    }
+    .hero-note{
+      font-size:11px;
+      color:#9ca3af;
+    }
+
+    /* 3 COLUMN INFO */
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:10px;
+      margin-bottom:18px;
+    }
+    .info-card{
+      border-radius:18px;
+      padding:12px 12px 10px;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 0 0 1px rgba(148,163,184,.5);
+      font-size:12px;
+    }
+    .info-card h3{
+      font-size:14px;
+      margin-bottom:4px;
+    }
+    .tag{
+      display:inline-block;
+      margin-top:4px;
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:#a5b4fc;
+    }
+
+    /* HOW IT WORKS */
+    .how-wrap{
+      border-radius:18px;
+      padding:14px 14px 10px;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 0 0 1px rgba(148,163,184,.5);
+      font-size:12px;
+      margin-bottom:12px;
+    }
+    .how-wrap h2{
+      font-size:15px;
+      margin-bottom:6px;
+    }
+    .steps{
+      list-style:none;
+      margin-top:4px;
+    }
+    .steps li{
+      margin-bottom:4px;
+    }
+    .steps span{
+      font-weight:600;
+      color:#38bdf8;
+    }
+
+    footer{
+      margin-top:8px;
+      font-size:10px;
+      color:#6b7280;
+      text-align:center;
+    }
+
+    @media(max-width:640px){
+      .shell{padding:12px;}
+      .top-header{flex-direction:column;align-items:flex-start;}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+
+    <!-- HEADER / NAV -->
+    <header class="top-header">
+      <div class="brand">
+        <img src="images/logo.png" alt="BTX Logo" class="brand-logo" />
+        <div class="brand-title">
+          <h1>BTX.ONE</h1>
+          <p>USDT MLM • Member Platform (Demo)</p>
+        </div>
+      </div>
+      <nav class="nav-actions">
+        <button class="btn-outline" onclick="window.location.href='index.html'">Home</button>
+        <button class="btn-outline" onclick="window.location.href='register-neon.html'">Register</button>
+        <button class="btn-outline" onclick="window.location.href='login.html'">Login</button>
+        <button class="btn" onclick="window.location.href='dashboard.html'">Member Area</button>
+      </nav>
+    </header>
+
+    <!-- HERO / COMPANY INFO -->
+    <section class="hero-card">
+      <div class="hero-glow"></div>
+      <div class="hero-inner">
+        <div class="hero-badge">
+          ⚠ Demo Project – Test & Learning Only
+        </div>
+        <h2 class="hero-title">BTX.ONE – USDT Based Smart Affiliate Platform</h2>
+        <p class="hero-sub">
+          BTX.ONE হচ্ছে একটা <strong>ডেমো USDT MLM / Affiliate</strong> সিস্টেম যেখানে তুমি
+          Registration, Login, Member Dashboard, Deposit & Withdraw Request – সবকিছু
+          front-end থেকে টেস্ট করতে পারবে। এখনো এখানে কোন Real Investment / Live Wallet
+          কানেক্ট নেই।
+        </p>
+
+        <div class="hero-cta">
+          <button class="btn" onclick="window.location.href='register-neon.html'">
+            ➜ Free Registration
+          </button>
+          <button class="btn-outline" onclick="window.location.href='login.html'">
+            Already Member? Login
+          </button>
+        </div>
+
+        <p class="hero-note">
+          ভবিষ্যতে এই প্ল্যাটফর্মে আমরা <strong>Smart Income Engine, Live Wallet Connect,
+          USDT Deposit / Withdraw, Generation Bonus, Global Pool</strong> ইত্যাদি
+          ধীরে ধীরে যুক্ত করব – সব কিছু প্রথমে Localhost / Test মোডে।
+        </p>
+      </div>
+    </section>
+
+    <!-- 3 MAIN HIGHLIGHTS -->
+    <section class="info-grid">
+      <article class="info-card">
+        <h3>Secure Member Area</h3>
+        <p>
+          প্রত্যেক ইউজারের জন্য আলাদা <strong>Dashboard</strong> – যেখানে Balance, Self
+          Investment, Sponsor Income, Generation Bonus ইত্যাদি Future এ দেখানো হবে।
+        </p>
+        <span class="tag">Member Dashboard</span>
+      </article>
+
+      <article class="info-card">
+        <h3>Smart Affiliate & Generation Plan</h3>
+        <p>
+          Sponsor Bonus, 20 Level Generation Bonus, Rank Bonus, Global Pool ইত্যাদি
+          আমরা ধীরে ধীরে Smart Income Engine এর মাধ্যমে হিসাব করব (Demo Calculation
+          already পরিকল্পনা করা আছে)।
+        </p>
+        <span class="tag">MLM / Affiliate</span>
+      </article>
+
+      <article class="info-card">
+        <h3>USDT Based Future Integration</h3>
+        <p>
+          ভবিষ্যতে BTX.ONE কে <strong>USDT / Crypto Wallet</strong> এর সাথে কানেক্ট করা হবে –
+          যেমন MetaMask / Tron / অন্য কোন Network – কিন্তু সব কিছু আগে Paper Plan ও
+          Localhost Test করে তারপর লাইভ করা হবে।
+        </p>
+        <span class="tag">USDT Focused</span>
+      </article>
+    </section>
+
+    <!-- HOW IT WORKS / SIMPLE FLOW -->
+    <section class="how-wrap">
+      <h2>কিভাবে ব্যবহার করবে (Demo Version)</h2>
+      <ul class="steps">
+        <li><span>1.</span> প্রথমে উপরের <strong>Free Registration</strong> বাটনে ক্লিক করে নতুন ID খুলে নাও।</li>
+        <li><span>2.</span> তারপর <strong>Login</strong> করে Member Dashboard এ গিয়ে Design ও Flow টেস্ট করো।</li>
+        <li><span>3.</span> Admin Panel থেকে তোমার Demo ডাটা (Deposit / Withdraw / Balance) ম্যানুয়ালি সেট হবে।</li>
+      </ul>
+      <p class="hero-note" style="margin-top:6px;">
+        👉 এই পেজে কোন Registration Form বা Real Transaction নেই – শুধু কোম্পানির
+        basic information ও Demo flow introduce করার জন্য।
+      </p>
+    </section>
+
+    <footer>
+      © <span id="year"></span> BTX.ONE • Demo USDT MLM Learning Project – All Rights Reserved.
+    </footer>
+  </div>
+
+  <script>
+    // Footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

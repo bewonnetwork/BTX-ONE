@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deposit – BTX.ONE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{
+      background:#020617;color:#e2e8f0;
+      font-family:system-ui;padding:20px;
+    }
+    .box{
+      max-width:420px;margin:auto;
+      background:#0f172a;padding:20px;
+      border-radius:16px;
+      box-shadow:0 0 0 1px #334155;
+    }
+    input,select{
+      width:100%;padding:10px;
+      background:#1e293b;border:1px solid #334155;
+      border-radius:10px;color:#fff;margin-bottom:12px;
+    }
+    button{
+      width:100%;padding:12px;
+      background:linear-gradient(135deg,#38bdf8,#22c55e);
+      border:none;border-radius:12px;
+      font-weight:bold;color:#0f172a;
+      cursor:pointer;
+      margin-top:10px;
+    }
+    .title{
+      text-align:center;font-size:22px;
+      margin-bottom:18px;font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="title">Add Deposit (Demo)</div>
+
+    <label>Amount (USDT)</label>
+    <input type="number" id="depAmount" placeholder="Min 5 USDT" />
+
+    <label>Select Method</label>
+    <select id="depMethod">
+      <option value="TRC20">USDT – TRC20</option>
+      <option value="BEP20">USDT – BEP20</option>
+    </select>
+
+    <label>Transaction Hash / Txn ID</label>
+    <input type="text" id="depTxn" placeholder="Paste your Txn Hash" />
+
+    <button onclick="submitDeposit()">Submit Deposit</button>
+  </div>
+
+
+<script>
+  const STORAGE_CURRENT = "btx_current_user_v1";
+  const STORAGE_DEPOSITS = "btx_deposits_v1";
+
+  function loadDeposits(){
+    const raw = localStorage.getItem(STORAGE_DEPOSITS);
+    return raw ? JSON.parse(raw) : [];
+  }
+  function saveDeposits(list){
+    localStorage.setItem(STORAGE_DEPOSITS, JSON.stringify(list));
+  }
+  function getUser(){
+    const raw = localStorage.getItem(STORAGE_CURRENT);
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  function submitDeposit(){
+    let me = getUser();
+    if(!me){
+      alert("Please login first.");
+      return;
+    }
+
+    let amount = parseFloat(document.getElementById("depAmount").value);
+    let method = document.getElementById("depMethod").value;
+    let txn    = document.getElementById("depTxn").value.trim();
+
+    if(amount < 5){
+      alert("Minimum deposit 5 USDT");
+      return;
+    }
+    if(txn.length < 6){
+      alert("Invalid Transaction ID");
+      return;
+    }
+
+    let list = loadDeposits();
+    let newId = Date.now();
+
+    list.push({
+      id:newId,
+      userId:me.id,
+      username:me.username,
+      amount:amount,
+      method:method,
+      txn:txn,
+      status:"pending",
+      createdAt:new Date().toISOString()
+    });
+
+    saveDeposits(list);
+
+    alert("Deposit submitted. Admin review করবে (demo)");
+    window.location.href = "dashboard.html";
+  }
+</script>
+
+</body>
+</html>

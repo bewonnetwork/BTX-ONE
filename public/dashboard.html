@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>BTX.ONE – Member Dashboard (Demo)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Chart.js for live charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+    body{
+      min-height:100vh;
+      background:radial-gradient(circle at top,#020617,#020617 60%);
+      color:#e5f0ff;
+      padding:16px;
+    }
+    a{color:#38bdf8;text-decoration:none}
+
+    .shell{
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    /* HEADER */
+    .dash-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .brand-logo-img{
+      width:52px;
+      height:52px;
+      border-radius:999px;
+      object-fit:cover;
+      box-shadow:0 0 26px rgba(59,130,246,.95);
+      background:#020617;
+    }
+    .brand-title h1{
+      font-size:18px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+    }
+    .brand-title p{
+      font-size:11px;
+      color:#9ca3af;
+      margin-top:2px;
+    }
+
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      position:relative;
+    }
+    .btn-small{
+      border:none;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      cursor:pointer;
+      background:linear-gradient(135deg,#38bdf8,#22c55e);
+      color:#020617;
+      box-shadow:0 14px 32px rgba(56,189,248,.85);
+    }
+    .btn-outline-small{
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      color:#e5e7eb;
+      cursor:pointer;
+    }
+    .menu-dot{
+      width:30px;
+      text-align:center;
+      padding:6px 0;
+      font-weight:700;
+    }
+    .menu-dropdown{
+      position:absolute;
+      right:0;
+      top:115%;
+      background:rgba(15,23,42,.98);
+      border-radius:12px;
+      box-shadow:0 18px 40px rgba(0,0,0,.85);
+      border:1px solid rgba(148,163,184,.6);
+      padding:6px;
+      min-width:150px;
+      display:none;
+      z-index:30;
+    }
+    .menu-dropdown button{
+      width:100%;
+      border:none;
+      background:transparent;
+      color:#e5f0ff;
+      font-size:12px;
+      padding:6px 8px;
+      text-align:left;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    .menu-dropdown button:hover{
+      background:rgba(51,65,85,.9);
+    }
+
+    /* CARD WRAPPER */
+    .dash-card-main{
+      position:relative;
+      border-radius:26px;
+      padding:12px 18px 20px;
+      background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(30,64,175,.96));
+      box-shadow:
+        0 0 0 2px rgba(56,189,248,.7),
+        0 26px 70px rgba(0,0,0,.9);
+      overflow:hidden;
+    }
+    .dash-glow{
+      position:absolute;
+      inset:-90px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,.25),transparent 60%),
+        radial-gradient(circle at 100% 100%,rgba(74,222,128,.25),transparent 60%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .dash-inner{position:relative;z-index:1;}
+
+    /* NOTICE / SCROLLING TEXT */
+    .notice-wrap{
+      margin:4px 0 10px;
+      border-radius:999px;
+      background:rgba(15,23,42,.96);
+      border:1px solid rgba(250,204,21,.7);
+      overflow:hidden;
+      padding:3px 0;
+    }
+    .notice-text{
+      display:inline-block;
+      padding:3px 16px;
+      white-space:nowrap;
+      font-size:11px;
+      color:#facc15;
+      animation:ticker 35s linear infinite alternate;
+    }
+    @keyframes ticker{
+      0%  {transform:translateX(-100%);}
+      100%{transform:translateX(100%);}
+    }
+
+    /* WELCOME */
+    .welcome-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .welcome-main{
+      flex:1;
+      min-width:220px;
+    }
+    .welcome-main h2{
+      font-size:20px;
+      margin-bottom:4px;
+    }
+    .welcome-main span{
+      color:#a5b4fc;
+      font-size:13px;
+    }
+    .badge-role{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      border-radius:999px;
+      padding:3px 10px;
+      font-size:10px;
+      margin-top:6px;
+      border:1px solid rgba(74,222,128,.7);
+      background:rgba(22,163,74,.2);
+      color:#bbf7d0;
+    }
+    .badge-member{
+      border-color:rgba(56,189,248,.7);
+      background:rgba(30,64,175,.25);
+      color:#bae6fd;
+    }
+    .member-status{
+      margin-top:4px;
+      font-size:11px;
+      color:#bbf7d0;
+    }
+
+    .welcome-right{
+      min-width:200px;
+      max-width:260px;
+      font-size:12px;
+      color:#cbd5f5;
+    }
+    .welcome-right div{margin-bottom:2px;}
+
+    /* SUMMARY CARDS */
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+      gap:10px;
+      margin-bottom:16px;
+    }
+    .summary-card{
+      border-radius:18px;
+      padding:10px 12px;
+      background:rgba(15,23,42,.94);
+      box-shadow:0 0 0 1px rgba(148,163,184,.4);
+      font-size:12px;
+      transition:transform .15s, box-shadow .15s;
+    }
+    .summary-card p{
+      color:#9ca3af;
+      margin-bottom:3px;
+    }
+    .summary-card h3{
+      font-size:18px;
+      font-weight:700;
+    }
+    .summary-tag{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:#a5b4fc;
+      margin-top:2px;
+    }
+    .summary-card:hover{
+      transform:translateY(-4px) scale(1.02);
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,.8),
+        0 18px 40px rgba(15,23,42,.95);
+    }
+
+    /* REFERRAL SECTION */
+    .ref-card{
+      border-radius:18px;
+      padding:12px 12px 12px;
+      background:rgba(15,23,42,.98);
+      box-shadow:0 0 0 1px rgba(56,189,248,.55);
+      margin-bottom:14px;
+    }
+    .ref-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:6px;
+    }
+    .ref-header h3{
+      font-size:14px;
+    }
+    .ref-header span{
+      font-size:11px;
+      color:#9ca3af;
+    }
+    .ref-body{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .ref-input{
+      flex:1;
+      min-width:200px;
+    }
+    .ref-input input{
+      width:100%;
+      padding:8px 10px;
+      border-radius:999px;
+      border:none;
+      outline:none;
+      background:rgba(15,23,42,1);
+      color:#e5f0ff;
+      font-size:12px;
+      box-shadow:0 0 0 1px rgba(148,163,184,.7);
+    }
+    .ref-btn{
+      border:none;
+      border-radius:999px;
+      padding:8px 14px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      cursor:pointer;
+      background:linear-gradient(135deg,#38bdf8,#22c55e);
+      color:#020617;
+      box-shadow:0 14px 34px rgba(59,130,246,.9);
+      white-space:nowrap;
+    }
+
+    /* ACCOUNT BOX */
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:10px;
+      margin-bottom:16px;
+    }
+    .info-card{
+      border-radius:16px;
+      padding:10px 12px;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 0 0 1px rgba(148,163,184,.45);
+      font-size:12px;
+    }
+    .info-card h4{
+      font-size:13px;
+      margin-bottom:6px;
+    }
+    .info-row{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:2px;
+    }
+    .info-row span:first-child{
+      color:#9ca3af;
+    }
+
+    /* CHARTS */
+    .charts-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:12px;
+      margin-bottom:4px;
+    }
+    .chart-card{
+      border-radius:18px;
+      padding:10px 12px 14px;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 0 0 1px rgba(148,163,184,.45);
+    }
+    .chart-card h4{
+      font-size:13px;
+      margin-bottom:4px;
+    }
+    canvas{
+      max-width:100%;
+    }
+
+    .note{
+      margin-top:6px;
+      font-size:10px;
+      color:#9ca3af;
+    }
+
+    @media(max-width:640px){
+      body{padding:10px;}
+      .dash-header{flex-direction:column;align-items:flex-start;gap:8px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- HEADER -->
+    <header class="dash-header">
+      <div class="brand">
+        <img src="images/logo.png" alt="BTX Logo" class="brand-logo-img" />
+        <div class="brand-title">
+          <h1>BTX.ONE</h1>
+          <p>USDT MLM • Member Dashboard (Demo)</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="adminBtn" class="btn-outline-small" style="display:none;"
+                onclick="goAdmin()">Admin</button>
+        <button class="btn-outline-small" onclick="goHome()">Home</button>
+        <button class="btn-small" onclick="logout()">Logout</button>
+        <button class="btn-outline-small menu-dot" id="menuToggle">⋮</button>
+
+        <!-- three-dot menu -->
+        <div class="menu-dropdown" id="menuDropdown">
+          <button type="button">Profile (demo)</button>
+          <button type="button">Packages (demo)</button>
+          <button type="button">Income Report (demo)</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CARD -->
+    <section class="dash-card-main">
+      <div class="dash-glow"></div>
+      <div class="dash-inner">
+
+        <!-- NOTICE LINE -->
+        <div class="notice-wrap">
+          <div class="notice-text" id="noticeText">
+            ⚠ Demo Dashboard: সব ইনকাম / ROI / গ্লোবাল বোনাস এখন শুধু লার্নিং ও ফ্রন্টএন্ড টেস্টের জন্য – কোন রিয়েল USDT বা লাইভ ইনভেস্টমেন্ট হচ্ছে না।
+          </div>
+        </div>
+
+        <!-- WELCOME -->
+        <div class="welcome-row">
+          <div class="welcome-main">
+            <h2 id="welcomeName">Welcome, Member</h2>
+            <span id="welcomeUser">@username</span>
+            <div id="roleBadge"></div>
+            <div class="member-status" id="memberStatus">Free Member (Demo)</div>
+          </div>
+          <div class="welcome-right">
+            <div id="infoEmail"></div>
+            <div id="infoCountry"></div>
+            <div id="infoMobile"></div>
+            <div id="infoSponsor"></div>
+          </div>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <div class="summary-grid">
+          <div class="summary-card">
+            <p>Current Balance</p>
+            <h3 id="sumBalance">$0.00</h3>
+            <div class="summary-tag">live from account</div>
+          </div>
+          <div class="summary-card">
+            <p>Self Investment</p>
+            <h3 id="sumSelf">$0.00</h3>
+            <div class="summary-tag">Total Deposit</div>
+          </div>
+          <div class="summary-card">
+            <p>Daily Profit (ROI)</p>
+            <h3 id="sumROI">$0.00</h3>
+            <div class="summary-tag">১ দিন এর হিসাব</div>
+          </div>
+          <div class="summary-card">
+            <p>Sponsor Bonus</p>
+            <h3 id="sumDirect">$0.00</h3>
+            <div class="summary-tag">ডাইরেক্ট রেফার</div>
+          </div>
+          <div class="summary-card">
+            <p>Generation Bonus</p>
+            <h3 id="sumGen">$0.00</h3>
+            <div class="summary-tag">লেভেল ইনকাম</div>
+          </div>
+          <div class="summary-card">
+            <p>Rank Bonus</p>
+            <h3 id="sumRank">$0.00</h3>
+            <div class="summary-tag">র‍্যাঙ্ক অনুযায়ী</div>
+          </div>
+          <div class="summary-card">
+            <p>Global Pool Bonus</p>
+            <h3 id="sumGlobal">$0.00</h3>
+            <div class="summary-tag">কোম্পানি গ্লোবাল</div>
+          </div>
+          <div class="summary-card">
+            <p>Gift Voucher</p>
+            <h3 id="sumGift">$0.00</h3>
+            <div class="summary-tag">Promo / coupon</div>
+          </div>
+          <div class="summary-card">
+            <p>Total Earning</p>
+            <h3 id="sumTotal">$0.00</h3>
+            <div class="summary-tag">সব মিলিয়ে টোটাল</div>
+          </div>
+        </div>
+
+        <!-- REFERRAL SECTION -->
+        <div class="ref-card">
+          <div class="ref-header">
+            <div>
+              <h3>My Referral Link</h3>
+              <span>এই লিঙ্ক শেয়ার করলে নতুন মেম্বার রেজিস্টার করলে আপনাকে Sponsor হিসাবে ধরবে। (Demo only)</span>
+            </div>
+          </div>
+          <div class="ref-body">
+            <div class="ref-input">
+              <input id="myRefLink" readonly />
+            </div>
+            <button class="ref-btn" onclick="copyRefLink()">Copy Link</button>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+         <button class="btn-outline-small" onclick="window.location.href='deposit.html'">
+           Deposit
+             </button>
+                 <button class="btn-outline-small" onclick="window.location.href='upgrade.html'">
+                Upgrade / Invest
+                </button>
+               <button class="btn-outline-small" onclick="window.location.href='withdraw.html'">
+               Withdraw
+             </button>
+          </div>
+
+        <!-- ACCOUNT INFO -->
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Account Details</h4>
+            <div class="info-row">
+              <span>Full Name</span>
+              <span id="accName">-</span>
+            </div>
+            <div class="info-row">
+              <span>Username</span>
+              <span id="accUser">-</span>
+            </div>
+            <div class="info-row">
+              <span>Email</span>
+              <span id="accEmail">-</span>
+            </div>
+            <div class="info-row">
+              <span>Role</span>
+              <span id="accRole">-</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <h4>Network Info</h4>
+            <div class="info-row">
+              <span>Country</span>
+              <span id="accCountry">-</span>
+            </div>
+            <div class="info-row">
+              <span>Mobile</span>
+              <span id="accMobile">-</span>
+            </div>
+            <div class="info-row">
+              <span>Sponsor</span>
+              <span id="accSponsor">-</span>
+            </div>
+            <div class="info-row">
+              <span>Joined</span>
+              <span id="accJoined">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIVE CHARTS -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>Income Breakdown (Demo)</h4>
+            <canvas id="incomeChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4>ROI Growth – 30 Days (Demo)</h4>
+            <canvas id="roiChart"></canvas>
+          </div>
+        </div>
+
+        <p class="note">
+          ⚠ সব ডাটা এখনো শুধুই ডেমো – future এ আমরা এখানে রিয়েল ব্যাকএন্ড, ওয়ালেট কানেক্ট ও প্যাকেজ সিস্টেম যোগ করব (লার্নিং purpose)।
+        </p>
+
+      </div>
+    </section>
+  </div>
+
+  <script>
+    var STORAGE_CURRENT = "btx_current_user_v1";
+    var STORAGE_USERS   = "btx_users_v1";
+
+    function getCurrentUser(){
+      var raw = localStorage.getItem(STORAGE_CURRENT);
+      if(!raw) return null;
+      try{
+        return JSON.parse(raw);
+      }catch(e){
+        return null;
+      }
+    }
+
+    function loadUsers(){
+      var raw = localStorage.getItem(STORAGE_USERS);
+      if(!raw) return [];
+      try{return JSON.parse(raw);}catch(e){return [];}
+    }
+
+    function logout(){
+      localStorage.removeItem(STORAGE_CURRENT);
+      alert("Logged out (demo).");
+      window.location.href = "login.html";
+    }
+
+    function goHome(){
+      window.location.href = "index.html";
+    }
+
+    function goAdmin(){
+      window.location.href = "admin.html";
+    }
+
+    function copyRefLink(){
+      var el = document.getElementById("myRefLink");
+      if(!el || !el.value){
+        alert("Referral link empty.");
+        return;
+      }
+      el.select();
+      try{
+        document.execCommand("copy");
+        alert("🔗 Referral link copied!");
+      }catch(e){
+        alert("Copy not supported – mobile থেকে manually সিলেক্ট করে কপি করুন।");
+      }
+    }
+
+    // three-dot menu toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const menuDropdown = document.getElementById("menuDropdown");
+    menuToggle.addEventListener("click", ()=>{
+      menuDropdown.style.display =
+        menuDropdown.style.display === "block" ? "none" : "block";
+    });
+    document.addEventListener("click", (e)=>{
+      if(!menuDropdown.contains(e.target) && e.target !== menuToggle){
+        menuDropdown.style.display = "none";
+      }
+    });
+
+    // MAIN INIT
+    (function initDashboard(){
+      var user = getCurrentUser();
+      if(!user){
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Admin button
+      var adminBtn = document.getElementById("adminBtn");
+      if(user.role === "admin"){
+        adminBtn.style.display = "inline-flex";
+      }
+
+      // Welcome vs Welcome back
+      var uName = user.username || "member";
+      var loginKey = "btx_login_count_" + uName;
+      var countRaw = localStorage.getItem(loginKey);
+      var count = countRaw ? parseInt(countRaw,10) : 0;
+
+      var welcomeTitle = (count > 0 ? "Welcome back, " : "Welcome, ");
+      document.getElementById("welcomeName").textContent =
+        welcomeTitle + (user.fullName || uName || "Member");
+
+      document.getElementById("welcomeUser").textContent =
+        "@" + (uName || "");
+
+      // save next count
+      localStorage.setItem(loginKey, (count + 1).toString());
+
+      var roleBadge = document.getElementById("roleBadge");
+      if(user.role === "admin"){
+        roleBadge.innerHTML =
+          '<span class="badge-role">● ADMIN PANEL ACCESS</span>';
+      }else{
+        roleBadge.innerHTML =
+          '<span class="badge-role badge-member">● MEMBER ACCOUNT</span>';
+      }
+
+      // Member status: free / premium from user.membershipType
+      var membership = user.membershipType || "free";
+      var statusEl = document.getElementById("memberStatus");
+      if(membership === "premium"){
+        statusEl.textContent = "Premium Member (Demo)";
+      }else{
+        statusEl.textContent = "Free Member (Demo)";
+      }
+
+      // Small info
+      document.getElementById("infoEmail").textContent =
+        "Email: " + (user.email || "-");
+      document.getElementById("infoCountry").textContent =
+        "Country: " + (user.country || "-");
+      document.getElementById("infoMobile").textContent =
+        "Mobile: " + (user.mobile || "-");
+      document.getElementById("infoSponsor").textContent =
+        "Sponsor: " + (user.sponsor_username || user.refCode || "N/A");
+
+      // Account box
+      document.getElementById("accName").textContent = user.fullName || "-";
+      document.getElementById("accUser").textContent = uName || "-";
+      document.getElementById("accEmail").textContent = user.email || "-";
+      document.getElementById("accRole").textContent =
+        (user.role === "admin" ? "Admin" : "Member");
+      document.getElementById("accCountry").textContent = user.country || "-";
+      document.getElementById("accMobile").textContent = user.mobile || "-";
+      document.getElementById("accSponsor").textContent =
+        user.sponsor_username || user.refCode || "-";
+
+      if(user.createdAt){
+        try{
+          var d = new Date(user.createdAt);
+          document.getElementById("accJoined").textContent = d.toLocaleString();
+        }catch(e){
+          document.getElementById("accJoined").textContent = "-";
+        }
+      }
+
+      // Referral link (always based on username)
+      var refLink =
+        window.location.origin +
+        "/register-neon.html?ref=" +
+        encodeURIComponent(uName || "");
+      document.getElementById("myRefLink").value = refLink;
+
+      // ==== REAL DATA FROM USER OBJECT ====
+      var selfInv      = user.depositTotal   || 0; // সব deposit টোটাল
+      var sponsorBonus = user.directIncome   || 0;
+      var genBonus     = user.teamIncome     || 0;
+      var rankBonus    = user.rankIncome     || 0;
+      var globalBonus  = user.globalIncome   || 0;
+      var giftVoucher  = user.giftVoucher    || 0;
+
+      // এখনো ROI ক্যালকুলেশন বানাইনি, তাই 0
+      var dailyROI     = user.dailyROI       || 0;
+
+      var totalEarning = sponsorBonus + genBonus + rankBonus + globalBonus + giftVoucher + dailyROI;
+      var currentBal   = user.balance || 0;  // Admin/deposit থেকে update হওয়া balance
+
+      // Summary text
+      document.getElementById("sumSelf").textContent    = "$" + selfInv.toFixed(2);
+      document.getElementById("sumROI").textContent     = "$" + dailyROI.toFixed(2);
+      document.getElementById("sumDirect").textContent  = "$" + sponsorBonus.toFixed(2);
+      document.getElementById("sumGen").textContent     = "$" + genBonus.toFixed(2);
+      document.getElementById("sumRank").textContent    = "$" + rankBonus.toFixed(2);
+      document.getElementById("sumGlobal").textContent  = "$" + globalBonus.toFixed(2);
+      document.getElementById("sumGift").textContent    = "$" + giftVoucher.toFixed(2);
+      document.getElementById("sumTotal").textContent   = "$" + totalEarning.toFixed(2);
+      document.getElementById("sumBalance").textContent = "$" + currentBal.toFixed(2);
+
+      // ===== CHART 1 – Income Breakdown =====
+      var ctx1 = document.getElementById("incomeChart").getContext("2d");
+      new Chart(ctx1,{
+        type:"bar",
+        data:{
+          labels:["Self Inv","ROI (1 day)","Sponsor","Generation","Rank","Global","Gift"],
+          datasets:[{
+            label:"USDT",
+            data:[
+              selfInv,
+              dailyROI,
+              sponsorBonus,
+              genBonus,
+              rankBonus,
+              globalBonus,
+              giftVoucher
+            ]
+          }]
+        },
+        options:{
+          plugins:{legend:{display:false}},
+          scales:{
+            x:{ticks:{color:"#e5f0ff"}},
+            y:{ticks:{color:"#e5f0ff"}}
+          }
+        }
+      });
+
+      // ===== CHART 2 – ROI Growth (30 days demo – still simple) =====
+      var days = [];
+      var roiValues = [];
+      var balanceSim = currentBal;
+      for(var i=1;i<=30;i++){
+        var profit = 0; // পরে income-engine বানালে এখানে আসল ROI বসাবো
+        balanceSim += profit;
+        days.push(i.toString());
+        roiValues.push(balanceSim.toFixed(2));
+      }
+
+      var ctx2 = document.getElementById("roiChart").getContext("2d");
+      new Chart(ctx2,{
+        type:"line",
+        data:{
+          labels:days,
+          datasets:[{
+            label:"Balance (demo)",
+            data:roiValues,
+            tension:0.3
+          }]
+        },
+        options:{
+          plugins:{legend:{display:false}},
+          scales:{
+            x:{ticks:{color:"#e5f0ff"}},
+            y:{ticks:{color:"#e5f0ff"}}
+          }
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
